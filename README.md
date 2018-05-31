@@ -39,7 +39,9 @@ pip install line-bot-sdk
 
 ## 使用方法
 
-TBD
+```
+python WarrantsStrategy.py
+```
 
 ## 注意事項
 
