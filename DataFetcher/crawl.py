@@ -6,6 +6,7 @@ import json
 import csv
 import time
 
+from DataFetcher.utils.recorder import Recorder
 from datetime import date
 
 import requests
@@ -52,12 +53,10 @@ class Crawler(object):
 
         return data
 
-class Recorder(object):
+class CrawlRecorder(Recorder):
     '''Record data to csv'''
     def __init__(self, path='../Result/data'):
-        self.folder_path = '{}/{}'.format(path, date.today().strftime('%Y%m%d'))
-        if not os.path.isdir(self.folder_path):
-            os.mkdir(self.folder_path)
+        Recorder.__init__(self,path)
 
     def record_to_csv(self, data):
         for row in data:
@@ -90,7 +89,7 @@ def main(input_path = None, output_path=None):
     controller = CrawlerController(targets)
     data = controller.run()
 
-    recorder = Recorder(path=output_path)
+    recorder = CrawlRecorder(path=output_path)
     recorder.record_to_csv(data)
 
 if __name__ == '__main__':
