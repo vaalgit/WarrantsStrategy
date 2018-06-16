@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+requests = "*"
+pylint = "*"
+pytest = "*"
+"urllib3" = "*"
+pytest-mock = "*"
+mock = "*"
+coverage = "*"
+line-bot-sdk = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
