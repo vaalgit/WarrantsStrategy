@@ -18,7 +18,7 @@ code . #this for vscode, you can use other IDE
 ## 使用方法
 
 ```
-python WarrantsStrategy.py
+python warrants_strategy.py
 ```
 
 ## 系統架構
