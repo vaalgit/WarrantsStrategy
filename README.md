@@ -12,7 +12,7 @@
 pip install pipenv
 pipenv sync --dev 
 pipenv shell
-code . #this for vscode, you can use other IDE
+code .          #This for vscode, you can use other IDE
 ```
 
 ## 使用方法
