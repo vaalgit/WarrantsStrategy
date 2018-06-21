@@ -1,8 +1,8 @@
 import time
 import json
 import requests
+import csv
 from datetime import datetime
-from crawl import Recorder
 from DataFetcher.utils.recorder import Recorder
 
 class SORTKIND:
@@ -38,15 +38,24 @@ class WarningStock:
             startDate,endDate,sortKind,querytype,
             timestamp)
         self.req = requests.session()
+        self.data = []
 
     def get_data(self):
         try:
+            print(self.query_url)
             response = self.req.get(self.query_url,headers={'Accept-Language': 'zh-TW'})
             content = json.loads(response.text)
         except Exception as err:
             print('[get_data] {}'.format(err))
-            data = []
+            self.data = []
         else:
-            data = content['msgArray']
+            self.data = [(data[1],data[2]) for data in content['data']]
 
-        return data
+        return self.data
+
+    def update_csv(self, input_path):
+        """ This function just for test """
+        with open(input_path, 'w') as update_file:
+            for data in self.data:        
+                writer = csv.writer(update_file,delimiter=',')
+                writer.writerow([data[0]])
