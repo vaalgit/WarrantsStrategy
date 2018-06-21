@@ -7,6 +7,7 @@ import csv
 import time
 import re
 
+from DataFetcher.utils.errors import CrawlRuntimeError
 from DataFetcher.utils.recorder import Recorder
 from datetime import date
 
@@ -95,6 +96,8 @@ class Crawler(object):
         try:
             response = self.session.get(self.query_url)
             content = json.loads(response.text)
+            if response.status_code != 200:
+                raise CrawlRuntimeError('code: {}\n{}\ncontent: {}'.format(response.status_code,self.query_url,content))
         except Exception as err:
             print('[get_data] {}'.format(err))
             data = []
@@ -114,7 +117,7 @@ class CrawlRecorder(Recorder):
             for row in infos:
                 try:
                     file_path = '{}/{}.csv'.format(self.folder_path, row['tse_idx_scode'])
-                    with open(file_path, 'a') as output_file:
+                    with open(file_path, 'a', newline='') as output_file:
                         writer = csv.writer(output_file, delimiter=',')
                         writer.writerow([
                             row['lst_date'],        #起始時間?

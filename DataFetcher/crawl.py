@@ -6,6 +6,7 @@ import json
 import csv
 import time
 
+from DataFetcher.utils.errors import CrawlRuntimeError
 from DataFetcher.utils.recorder import Recorder
 from datetime import date
 
@@ -14,9 +15,10 @@ import requests
 class CrawlerController(object):
     '''Split targets into several Crawler, avoid request url too long'''
 
-    def __init__(self, targets, max_stock_per_crawler=50):
+    def __init__(self, targets, max_stock_per_crawler=50, delay_get_ms=500):
         self.crawlers = []
         self.len = len(targets)
+        self.delay_get = delay_get_ms/1000.0        # for delay 500ms
         for index in range(0, self.len ):
             crawler = Crawler([targets[index]])
             self.crawlers.append(crawler)
@@ -24,6 +26,7 @@ class CrawlerController(object):
     def run(self):
         data = []
         for crawler in self.crawlers:
+            time.sleep(self.delay_get)
             data.extend(crawler.get_data())
         return data
 
@@ -45,8 +48,10 @@ class Crawler(object):
         try:
             response = self.req.get(self.query_url)
             content = json.loads(response.text)
+            if response.status_code != 200 or 'msgArray' not in content:
+                raise CrawlRuntimeError('code: {}\n{}\ncontent: {}'.format(response.status_code,self.query_url,content))
         except Exception as err:
-            print('[get_data] {}'.format(err))
+            print('[Crawler][get_data] {}'.format(err))
             data = []
         else:
             data = content['msgArray']
@@ -62,7 +67,7 @@ class CrawlRecorder(Recorder):
         for row in data:
             try:
                 file_path = '{}/{}.csv'.format(self.folder_path, row['c'])
-                with open(file_path, 'a') as output_file:
+                with open(file_path, 'a', newline='') as output_file:
                     writer = csv.writer(output_file, delimiter=',')
                     writer.writerow([
                         row['t'],# 資料時間

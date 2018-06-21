@@ -2,6 +2,8 @@ import time
 import json
 import requests
 import csv
+
+from DataFetcher.utils.errors import CrawlRuntimeError
 from datetime import datetime
 from DataFetcher.utils.recorder import Recorder
 
@@ -42,11 +44,12 @@ class WarningStock:
 
     def get_data(self):
         try:
-            print(self.query_url)
             response = self.req.get(self.query_url,headers={'Accept-Language': 'zh-TW'})
             content = json.loads(response.text)
+            if response.status_code != 200:
+                raise CrawlRuntimeError('code: {}\n{}\ncontent: {}'.format(response.status_code,self.query_url,content))
         except Exception as err:
-            print('[get_data] {}'.format(err))
+            print('[WarningStock][get_data] {}'.format(err))
             self.data = []
         else:
             self.data = [(data[1],data[2]) for data in content['data']]
@@ -55,7 +58,7 @@ class WarningStock:
 
     def update_csv(self, input_path):
         """ This function just for test """
-        with open(input_path, 'w') as update_file:
+        with open(input_path, 'w', newline='') as update_file:
             for data in self.data:        
-                writer = csv.writer(update_file,delimiter=',')
+                writer = csv.writer(update_file, delimiter=',')
                 writer.writerow([data[0]])
