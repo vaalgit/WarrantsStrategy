@@ -21,7 +21,7 @@ def main():
             input_path=input_path,
             output_path=output_warrant_path)
     except Exception as ex:
-        print(ex)
+        print('exception: {}'.format(ex))
     
 
 

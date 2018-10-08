@@ -71,9 +71,9 @@ class CrawlRecorder(Recorder):
                     writer = csv.writer(output_file, delimiter=',')
                     writer.writerow([
                         row['t'],# 資料時間
-                        row['z'],# 最近成交價
+                        row['z'] if 'z' in row else 'None',# 最近成交價
                         row['tv'],# 當盤成交量
-                        row['v'],# 當日累計成交量
+                        row['v'] if 'v' in row else 'None',# 當日累計成交量
                         row['a'],# 最佳五檔賣出價格
                         row['f'],# 最價五檔賣出數量
                         row['b'],# 最佳五檔買入價格
@@ -81,7 +81,7 @@ class CrawlRecorder(Recorder):
                     ])
 
             except Exception as err:
-                print(err)
+                print('{} exception:{}'.format(CrawlRecorder.__name__,err))
 
 def main(input_path = None, output_path=None):
     if not input_path:
